@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件上传测试</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../dist/easy-obs.umd.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    EndPoint：<input v-model.trim="EndPoint" type="text" placeholder="obs.cn-southwest-2.myhuaweicloud.com">
+    Bucket：<input v-model.trim="Bucket" type="text" placeholder="test">
+    <br>
+    <br>
+    AK：<input v-model.trim="AK" type="text" placeholder="输入AK">
+    <br>
+    SK：<input v-model.trim="SK" type="text" placeholder="输入SK">
+    <br>
+    <br>
+    <input type="file" @change="onUpload">
+  </div>
+</body>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      const AK = sessionStorage.getItem('AK') || ''
+      const SK = sessionStorage.getItem('SK') || ''
+      const Bucket = sessionStorage.getItem('Bucket') || ''
+      const EndPoint = sessionStorage.getItem('EndPoint') || ''
+      return {
+        EndPoint,
+        Bucket,
+        AK,
+        SK,
+      }
+    },
+    watch: {
+      SK: (val) => {
+        sessionStorage.setItem('SK', val)
+      },
+      AK: (val) => {
+        sessionStorage.setItem('AK', val)
+      },
+      EndPoint: (val) => {
+        sessionStorage.setItem('EndPoint', val)
+      },
+      Bucket: (val) => {
+        sessionStorage.setItem('Bucket', val)
+      }
+    },
+    methods: {
+      onUpload(ev) {
+        const file = ev.target.files[0]
+        const uploader = new easyObs.ObsUploader({
+          ak: this.AK,
+          sk: this.SK,
+          bucket: this.Bucket,
+          endpoint: this.EndPoint
+        })
+        uploader.upload(file, { log: (type, msg) => console.log(type, msg) })
+        console.log()
+      }
+    }
+  }).mount('#app')
+</script>
+
+</html>
