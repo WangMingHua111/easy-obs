@@ -23,11 +23,18 @@
     <br>
     <br>
     <input type="file" @change="onUpload">
+
+    <br>
+    <template v-for="url in urls">
+      <a :href="url" :key="url">{{url}}</a>
+      <br>
+    </template>
+
   </div>
 </body>
 
 <script>
-  const { createApp } = Vue
+  const { createApp, ref } = Vue
 
   createApp({
     data() {
@@ -35,11 +42,13 @@
       const SK = sessionStorage.getItem('SK') || ''
       const Bucket = sessionStorage.getItem('Bucket') || ''
       const EndPoint = sessionStorage.getItem('EndPoint') || ''
+      const urls = ref([])
       return {
         EndPoint,
         Bucket,
         AK,
         SK,
+        urls
       }
     },
     watch: {
@@ -57,7 +66,7 @@
       }
     },
     methods: {
-      onUpload(ev) {
+      async onUpload(ev) {
         const file = ev.target.files[0]
         const uploader = new easyObs.ObsUploader({
           ak: this.AK,
@@ -65,8 +74,9 @@
           bucket: this.Bucket,
           endpoint: this.EndPoint
         })
-        uploader.upload(file, { log: (type, msg) => console.log(type, msg) })
-        console.log()
+        const url = await uploader.upload(file, { log: (type, msg) => console.log(type, msg) })
+        this.urls.push(url)
+        alert('上传成功：' + url)
       }
     }
   }).mount('#app')
