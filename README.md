@@ -2,8 +2,6 @@
 
 华为云 OBS 文件上传库
 
-## NPM
-
 ```
 npm install easy-obs
 ```
